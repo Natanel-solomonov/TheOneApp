@@ -1,0 +1,12 @@
+# Ignore the secrets file
+Secrets.swift
+
+# macOS system files
+.DS_Store
+
+# Xcode files
+DerivedData/
+*.xcuserdata/
+
+Secrets.swift
+Secrets.swift
