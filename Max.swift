@@ -47,6 +47,7 @@ struct MessageBubble: View {
 struct MaxView: View {
     var userName: String
     var phoneNumber: String
+    let userFirstName: String
     @State private var showSecondBubble = true
     @State private var showThirdBubble = false
     @State private var userMessages: [String] = []
@@ -165,7 +166,7 @@ struct MaxView: View {
                 .background(Color.black.opacity(0.9))
             }
             .fullScreenCover(isPresented: $navigateToDashboard) {
-                DashboardView()
+                DashboardView(userFirstName: userFirstName)
             }
         }
     }
@@ -274,6 +275,4 @@ struct MaxView: View {
     }
 }
 
-#Preview {
-    MaxView(userName: "John", phoneNumber: "2159136110")
-}
+
