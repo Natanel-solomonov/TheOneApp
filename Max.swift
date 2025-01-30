@@ -1,28 +1,71 @@
 import SwiftUI
 import Foundation
+import SwiftUI
+
+struct MessageBubble: View {
+    var text: String
+    var isUser: Bool
+    var isSystemMessage: Bool = false
+
+    var body: some View {
+        HStack {
+            if isUser {
+                Spacer()
+                Text(text)
+                    .foregroundColor(.black)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                    )
+            } else if isSystemMessage {
+                Text(text)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.gray.opacity(0.4))
+                    )
+                Spacer()
+            } else {
+                Text(text)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.gray.opacity(0.2))
+                    )
+                Spacer()
+            }
+        }
+        .padding(.horizontal, 10)
+    }
+}
+
+
 
 struct MaxView: View {
     var userName: String
     var phoneNumber: String
-    @State private var showSecondBubble = true // Ensure this starts as true
+    @State private var showSecondBubble = true
     @State private var showThirdBubble = false
     @State private var userMessages: [String] = []
     @State private var userInput: String = ""
     @State private var verificationInProgress = false
     @State private var isVerified = false
-    @State private var onboardingStage = 0 // Tracks onboarding progress
+    @State private var onboardingStage = 0
     @State private var generalGoals: String = ""
     @State private var mentalHealthGoals: String = ""
     @State private var dietaryRestrictions: String = ""
     @State private var weight: String = ""
     @State private var gender: String = ""
+    @State private var showContinueButton = false
     @State private var navigateToDashboard = false
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             VStack(spacing: 0) {
-                // Profile Section
                 VStack(spacing: 5) {
                     Image("Max")
                         .resizable()
@@ -37,12 +80,12 @@ struct MaxView: View {
                         .foregroundColor(.white)
                         .font(.headline)
                 }
-                // Divider
+
                 Divider()
                     .frame(height: 1)
                     .background(Color.gray)
                     .padding(.horizontal, 20)
-                // Chat Window
+
                 ScrollView {
                     ScrollViewReader { scrollViewProxy in
                         VStack(alignment: .leading, spacing: 10) {
@@ -54,7 +97,7 @@ struct MaxView: View {
                             if !isVerified {
                                 MessageBubble(text: "Let’s get started by verifying your phone number. I’ve sent you a code. Please enter it here.", isUser: false)
                             }
-                            // User Messages
+
                             ForEach(userMessages.indices, id: \.self) { index in
                                 let messageParts = userMessages[index].split(separator: "|")
                                 let text = String(messageParts[0])
@@ -70,37 +113,54 @@ struct MaxView: View {
                     }
                 }
                 .padding(.top, 10)
-                // Input Section
+
                 VStack {
                     Divider()
                         .frame(height: 1)
                         .background(Color.gray)
-                    HStack {
-                        TextField(isVerified ? "Enter your response here..." : "Enter verification code", text: $userInput)
-                            .padding()
-                            .padding(.leading, 20)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(20)
-                            .foregroundColor(.white)
-                            .accentColor(.white)
-                        Button(action: handleUserInput) {
-                            ZStack {
-                                Circle() 
-                                    .stroke(Color.white, lineWidth: 2)
-                                    .frame(width: 50, height: 50)
-                                Circle()
-                                    .fill(Color.black)
-                                    .frame(width: 40, height: 40)
-                                Image(systemName: "arrow.up.circle.fill")
-                                    .resizable()
-                                    .frame(width: 30, height: 30)
-                                    .foregroundColor(.white)
-                            }
+
+                    if showContinueButton {
+                        Button(action: {
+                            navigateToDashboard = true
+                        }) {
+                            Text("Continue")
+                                .font(.headline)
+                                .foregroundColor(.black)
+                                .padding()
+                                .frame(width: 150, height: 50)
+                                .background(Color.white)
+                                .cornerRadius(25)
                         }
-                        .padding(.leading, 10)
+                        .padding(.top, 10)
+                    } else {
+                        HStack {
+                            TextField(isVerified ? "Enter your response here..." : "Enter verification code", text: $userInput)
+                                .padding()
+                                .padding(.leading, 20)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(20)
+                                .foregroundColor(.white)
+                                .accentColor(.white)
+
+                            Button(action: handleUserInput) {
+                                ZStack {
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: 2)
+                                        .frame(width: 50, height: 50)
+                                    Circle()
+                                        .fill(Color.black)
+                                        .frame(width: 40, height: 40)
+                                    Image(systemName: "arrow.up.circle.fill")
+                                        .resizable()
+                                        .frame(width: 30, height: 30)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .padding(.leading, 10)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
                 }
                 .background(Color.black.opacity(0.9))
             }
@@ -110,12 +170,11 @@ struct MaxView: View {
         }
     }
 
-    /// Handle user input for verification and onboarding
     func handleUserInput() {
         guard !userInput.isEmpty else { return }
         userMessages.append(userInput)
+
         if !isVerified {
-            // Handle verification process
             let enteredCode = userInput
             userInput = ""
             verificationInProgress = true
@@ -138,7 +197,6 @@ struct MaxView: View {
                 }
             }
         } else {
-            // Handle onboarding questions
             switch onboardingStage {
             case 0:
                 generalGoals = userInput
@@ -155,10 +213,8 @@ struct MaxView: View {
             case 4:
                 gender = userInput
                 saveUserData()
-                userMessages.append("Ok, I have all that I need to help create your own personal One Plan. So get out there and start earning some points! You will be naviagated to your personal dashboard shortly |System")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    navigateToDashboard = true
-                }
+                userMessages.append("Ok, I have all that I need to help create your own personal One Plan. So get out there and start earning some points! Tap continue to go to your personal dashboard.|System")
+                showContinueButton = true
             default:
                 break
             }
@@ -167,7 +223,6 @@ struct MaxView: View {
         }
     }
 
-    /// Save user data with goals and additional details to JSON
     func saveUserData() {
         do {
             let encoder = JSONEncoder()
@@ -219,45 +274,6 @@ struct MaxView: View {
     }
 }
 
-struct MessageBubble: View {
-    var text: String
-    var isUser: Bool
-    var isSystemMessage: Bool = false
-    var body: some View {
-        HStack {
-            if isUser {
-                Spacer()
-                Text(text)
-                    .foregroundColor(.black)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
-                    )
-            } else if isSystemMessage {
-                Text(text)
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.gray.opacity(0.4))
-                    )
-                Spacer()
-            } else {
-                Text(text)
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.gray.opacity(0.2))
-                    )
-                Spacer()
-            }
-        }
-    }
-}
-
 #Preview {
     MaxView(userName: "John", phoneNumber: "2159136110")
 }
-
