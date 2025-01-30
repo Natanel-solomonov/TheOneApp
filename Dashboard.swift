@@ -3,121 +3,158 @@ import SwiftUI
 struct DashboardView: View {
     @State private var showMaxView = false
     @State private var showProfileView = false
-    @State private var expandedBoxIndex: Int? = nil // Tracks which box is expanded
-    @State private var totalPoints: Int = 0 // Tracks accumulated points
+    @State private var expandedBoxIndex: Int? = nil
+    @State private var totalPoints: Int = 0
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 10) {
-                // Top Bar with Max Button and Profile Icon
-                HStack {
-                    Button(action: {
-                        showMaxView = true
-                    }) {
-                        HStack(spacing: 10) {
-                            Image("Max")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 40, height: 40)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                            Text("Talk to Max")
-                                .foregroundColor(.white)
-                                .font(.headline)
+            VStack(spacing: 0) {
+                // Sticky Top Bar
+                VStack {
+                    HStack {
+                        Button(action: { showMaxView = true }) {
+                            HStack(spacing: 10) {
+                                Image("Max")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                Text("Talk to Max")
+                                    .foregroundColor(.white)
+                                    .font(.headline)
+                            }
                         }
-                    }
-                    .padding(.leading, 20)
-                    .padding(.top, 10)
-
-                    Spacer()
-
-                    Button(action: {
-                        showProfileView = true
-                    }) {
-                        Image(systemName: "person.crop.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40, height: 40)
-                            .foregroundColor(.white) // Uses SF Symbols
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.top, 10)
-                }
-
-                // "Today's Activities" Text
-                HStack {
-                    Text("Today's Activities")
-                        .foregroundColor(.white)
-                        .font(.largeTitle)
-                        .bold()
                         .padding(.leading, 20)
                         .padding(.top, 10)
-                    Spacer()
-                }
 
-                // Activity Boxes
-                ZStack(alignment: .leading) {
-                    VStack(spacing: 15) {
-                        ActivityBox(
-                            title: "Traditional Strength Training",
-                            points: 100,
-                            buttonText: "Get Today's Workout",
-                            isExpanded: expandedBoxIndex == 0,
-                            onExpand: { expandedBoxIndex = expandedBoxIndex == 0 ? nil : 0 },
-                            onPointsEarned: addPoints
-                        )
-                        ActivityBox(
-                            title: "Track Meals",
-                            points: 100,
-                            buttonText: "Log Now",
-                            isExpanded: expandedBoxIndex == 1,
-                            onExpand: { expandedBoxIndex = expandedBoxIndex == 1 ? nil : 1 },
-                            onPointsEarned: addPoints
-                        )
-                        ActivityBox(
-                            title: "Wind Down for Bed",
-                            points: 100,
-                            buttonText: "View Checklist",
-                            isExpanded: expandedBoxIndex == 2,
-                            onExpand: { expandedBoxIndex = expandedBoxIndex == 2 ? nil : 2 },
-                            onPointsEarned: addPoints
-                        )
-                    }
-
-                    // Vertical Slider Dot
-                    VStack {
                         Spacer()
-                            .frame(height: expandedBoxIndex == 0 ? 20 : expandedBoxIndex == 1 ? 180 : 340)
-                        Circle()
-                            .frame(width: 10, height: 10)
-                            .foregroundColor(.white)
-                            .offset(x: -20)
-                        Spacer()
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
 
-                // Transparent Points Bar
-                VStack {
-                    Text("\(totalPoints)/500 Points")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 5)
-                        .overlay(
-                            Capsule()
-                                .stroke(Color.white, lineWidth: 1)
-                        )
-                        .frame(maxWidth: .infinity) // Spans entire screen
+                        Button(action: { showProfileView = true }) {
+                            Image(systemName: "person.crop.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.trailing, 20)
                         .padding(.top, 10)
+                    }
+                    .padding(.bottom, 5)
+                    .background(Color.black.opacity(0.9))
                 }
+                .zIndex(1)
 
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // "Today's Activities" Section
+                        HStack {
+                            Text("Today's Activities < >")
+                                .foregroundColor(.white)
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.leading, 20)
+                                .padding(.top, 10)
+                            Spacer()
+                        }
+
+                        // Activity Section
+                        HStack(spacing: 5) {
+                            VStack {
+                                ForEach(0..<3, id: \.self) { index in
+                                    Circle()
+                                        .frame(width: 14, height: 14)
+                                        .foregroundColor(expandedBoxIndex == index ? .white : .gray.opacity(0.5))
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.gray, lineWidth: 2)
+                                                .opacity(expandedBoxIndex == index ? 0 : 1)
+                                        )
+                                    if index < 2 {
+                                        Rectangle()
+                                            .frame(width: 3, height: 100)
+                                            .foregroundColor(.gray.opacity(0.5))
+                                    }
+                                }
+                            }
+
+                            VStack(spacing: 8) {
+                                ActivityBox(
+                                    title: "Traditional Strength Training",
+                                    points: 100,
+                                    buttonText: "Get Today's Workout",
+                                    isExpanded: expandedBoxIndex == 0,
+                                    onExpand: { expandedBoxIndex = expandedBoxIndex == 0 ? nil : 0 },
+                                    onPointsEarned: addPoints
+                                )
+                                ActivityBox(
+                                    title: "Track Meals",
+                                    points: 100,
+                                    buttonText: "Log Now",
+                                    isExpanded: expandedBoxIndex == 1,
+                                    onExpand: { expandedBoxIndex = expandedBoxIndex == 1 ? nil : 1 },
+                                    onPointsEarned: addPoints
+                                )
+                                ActivityBox(
+                                    title: "Wind Down for Bed",
+                                    points: 100,
+                                    buttonText: "View Checklist",
+                                    isExpanded: expandedBoxIndex == 2,
+                                    onExpand: { expandedBoxIndex = expandedBoxIndex == 2 ? nil : 2 },
+                                    onPointsEarned: addPoints
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 5)
+
+                        // Points Bar
+                        VStack {
+                            Text("\(totalPoints)/500 Points")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 1)
+                                .frame(width: UIScreen.main.bounds.width)
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color.white, lineWidth: 1)
+                                )
+                                .frame(maxWidth: .infinity)
+                        }
+                        .padding(.top, 10)
+
+                        // "My Shortcuts" Section
+                        HStack {
+                            Text("My Shortcuts")
+                                .font(.title2)
+                                .bold()
+                                .foregroundColor(.white)
+                                .padding(.leading, 20)
+                                .padding(.top, 10)
+                            Spacer()
+                        }
+
+                        // 2x2 Shortcut Buttons Grid
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: 10) {
+                            ShortcutButton(iconName: "fork.knife", label: "Food Tracking")
+                            ShortcutButton(iconName: "brain.head.profile", label: "Mindfulness")
+                            ShortcutButton(iconName: "dumbbell", label: "Physical Activity")
+                            ShortcutButton(iconName: "book", label: "Add New Shortcut")
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 5)
+
+                        Spacer()
+                    }
+                }
+                .padding(.bottom, 60)
+            }
+
+            // Sticky Footer
+            VStack {
                 Spacer()
-
-                // Footer Navigation Bar
                 HStack {
                     FooterButton(iconName: "house", label: "Dashboard")
                     FooterButton(iconName: "chart.bar", label: "Insights")
@@ -126,19 +163,20 @@ struct DashboardView: View {
                     FooterButton(iconName: "gift", label: "Rewards")
                 }
                 .padding()
-                .background(Color.gray.opacity(0.2))
+                .background(Color.black.opacity(0.9))
             }
+            .edgesIgnoringSafeArea(.bottom)
         }
         .fullScreenCover(isPresented: $showMaxView) {
             MaxView(userName: "John", phoneNumber: "2159136110")
         }
         .fullScreenCover(isPresented: $showProfileView) {
-            ProfileView() // Pass required arguments
+            ProfileView()
         }
     }
 
     func addPoints(_ points: Int) {
-        totalPoints = min(totalPoints + points, 500) // Ensures points stop at 500
+        totalPoints = min(totalPoints + points, 500)
     }
 }
 
@@ -156,22 +194,20 @@ struct ActivityBox: View {
                 Text(title)
                     .font(.headline)
                     .foregroundColor(.white)
-                    .padding(.top, 5) // Reduced padding
                 Spacer()
                 Button(action: {
                     onPointsEarned(points)
                 }) {
                     Text("+\(points) Points")
                         .foregroundColor(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
                         .overlay(
                             Capsule().stroke(Color.green, lineWidth: 1)
                         )
                 }
             }
             .padding(.horizontal, 10)
-            .padding(.top, 5) // Reduced padding
 
             if isExpanded {
                 Button(action: {}) {
@@ -183,11 +219,11 @@ struct ActivityBox: View {
                         .background(Color.white)
                         .cornerRadius(20)
                 }
-                .padding(.vertical, 10)
+                .padding(.vertical, 5)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: isExpanded ? 200 : 120) // Adjusted height for collapsed and expanded states
+        .frame(height: isExpanded ? 170 : 100)
         .background(Color.gray.opacity(0.2))
         .cornerRadius(10)
         .onTapGesture {
@@ -200,28 +236,45 @@ struct ActivityBox: View {
 struct FooterButton: View {
     let iconName: String
     let label: String
-    @State private var isHighlighted = false
 
     var body: some View {
-        Button(action: {
-            withAnimation {
-                isHighlighted = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    isHighlighted = false
-                }
-            }
-        }) {
+        VStack {
+            Image(systemName: iconName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .foregroundColor(.white)
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.white)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct ShortcutButton: View {
+    let iconName: String
+    let label: String
+
+    var body: some View {
+        Button(action: {}) {
             VStack {
                 Image(systemName: iconName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(isHighlighted ? .white : .gray)
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
                 Text(label)
-                    .font(.caption)
-                    .foregroundColor(isHighlighted ? .white : .gray)
+                    .font(.headline)
+                    .foregroundColor(.white)
             }
-            .padding(.horizontal, 10)
+            .frame(width: UIScreen.main.bounds.width / 2 - 25, height: 100)
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.gray, lineWidth: 1)
+            )
         }
     }
 }
