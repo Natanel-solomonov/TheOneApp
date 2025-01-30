@@ -5,6 +5,7 @@ struct DashboardView: View {
     @State private var showProfileView = false
     @State private var expandedBoxIndex: Int? = nil
     @State private var totalPoints: Int = 0
+    let userFirstName: String
 
     var body: some View {
         ZStack {
@@ -51,7 +52,7 @@ struct DashboardView: View {
                     VStack(spacing: 0) {
                         // "Today's Activities" Section
                         HStack {
-                            Text("Today's Activities < >")
+                            Text("\(userFirstName)'s Activities")
                                 .foregroundColor(.white)
                                 .font(.largeTitle)
                                 .bold()
@@ -168,7 +169,7 @@ struct DashboardView: View {
             .edgesIgnoringSafeArea(.bottom)
         }
         .fullScreenCover(isPresented: $showMaxView) {
-            MaxView(userName: "John", phoneNumber: "2159136110")
+            MaxView(userName: "John", phoneNumber: "2159136110", userFirstName:"Natanel")
         }
         .fullScreenCover(isPresented: $showProfileView) {
             ProfileView()
@@ -280,6 +281,6 @@ struct ShortcutButton: View {
 }
 
 #Preview {
-    DashboardView()
+    DashboardView(userFirstName: "Natanel")
 }
 

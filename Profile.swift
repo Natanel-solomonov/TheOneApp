@@ -114,7 +114,7 @@ struct ProfileView: View {
                 VStack {
                     HStack {
                         // Back Button
-                        NavigationLink(destination: DashboardView()) {
+                        NavigationLink(destination: DashboardView(userFirstName: "Natanel")) {
                             Image(systemName: "arrow.left")
                                 .foregroundColor(.black)
                                 .padding()

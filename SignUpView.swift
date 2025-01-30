@@ -100,7 +100,7 @@ struct SignUpView: View {
                 }
             }
             .navigationDestination(isPresented: $isNavigating) {
-                MaxView(userName: "\(firstName) \(lastName)", phoneNumber: phoneNumber) // Navigate to MaxView
+                MaxView(userName: "\(firstName) \(lastName)", phoneNumber: phoneNumber, userFirstName: firstName) // Navigate to MaxView
             }
         }
     }
