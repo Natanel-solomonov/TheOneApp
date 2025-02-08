@@ -256,9 +256,14 @@ struct FooterButton: View {
 struct ShortcutButton: View {
     let iconName: String
     let label: String
+    @State private var showWorkoutList = false
 
     var body: some View {
-        Button(action: {}) {
+        Button(action: {
+            if label == "Physical Activity" {
+                showWorkoutList = true
+            }
+        }) {
             VStack {
                 Image(systemName: iconName)
                     .resizable()
@@ -277,8 +282,14 @@ struct ShortcutButton: View {
                     .stroke(Color.gray, lineWidth: 1)
             )
         }
+        .fullScreenCover(isPresented: $showWorkoutList) {
+            WorkoutListView()
+        }
     }
 }
+
+
+
 
 #Preview {
     DashboardView(userFirstName: "Natanel")
