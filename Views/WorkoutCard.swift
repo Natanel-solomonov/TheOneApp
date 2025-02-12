@@ -14,7 +14,7 @@ struct WorkoutCard: View {
                 
                 Spacer()
                 
-                Image(systemName: "dumbbell")  // Dumbbell icon
+                Image(systemName: "dumbbell")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
@@ -36,12 +36,28 @@ struct WorkoutCard: View {
                             .font(.caption)
                     }
                 }
+                
+                // Start Workout Button - White with Black Text, Centered, Half-width
+                HStack {
+                    Spacer() // Push the button to center
+                    NavigationLink(destination: WorkoutDetailView(workout: workout)) {
+                        Text("Start Workout")
+                            .font(.headline)
+                            .foregroundColor(.black) // Black text
+                            .padding()
+                            .frame(width: 150) // Half-width size
+                            .background(Color.white) // White background
+                            .cornerRadius(10)
+                    }
+                    Spacer() // Push the button to center
+                }
+                .padding(.top, 10)
             }
         }
         .padding()
-        .frame(maxWidth: .infinity)  // Make it span full screen width
-        .background(Color.black)  // Black background for cards
-        .overlay(  // White border (same as shortcut buttons)
+        .frame(maxWidth: .infinity)
+        .background(Color.black)
+        .overlay(
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.white, lineWidth: 1)
         )

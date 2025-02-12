@@ -10,11 +10,15 @@ struct Workout: Identifiable, Codable {
 struct WorkoutExercise: Identifiable, Codable {
     let id: Int
     let exercise: Exercise
+    let sets: Int?
+    let reps: Int?
+    let equipment: String?
 }
+
 
 struct Exercise: Identifiable, Codable {
     let id: Int
     let name: String
 }
 
-//Matches structure of django workout serializer from the backend. 
+

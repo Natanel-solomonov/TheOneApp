@@ -2,9 +2,13 @@ import Foundation
 
 class WorkoutAPI {
     static func fetchWorkouts(completion: @escaping (Result<[Workout], Error>) -> Void) {
+        let apiKey = "YOUR_HARDCODED_API_KEY"
         guard let url = URL(string: "http://127.0.0.1:8000/api/workouts/") else { return }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
