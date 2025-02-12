@@ -2,12 +2,11 @@ import SwiftUI
 
 struct WorkoutListView: View {
     @StateObject private var viewModel = WorkoutViewModel()
-    @State private var expandedWorkoutId: Int? = nil  // Track which workout is expanded
+    @State private var expandedWorkoutId: Int? = nil
     
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                // Bold White "Workouts" Title
                 Text("Workouts")
                     .font(.largeTitle)
                     .bold()
@@ -30,7 +29,7 @@ struct WorkoutListView: View {
                     .padding()
                 }
             }
-            .background(Color.black.edgesIgnoringSafeArea(.all))  // Black background
+            .background(Color.black.edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchWorkouts()
             }
